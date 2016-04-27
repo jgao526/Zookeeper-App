@@ -1,0 +1,102 @@
+	<div class="col-md-2 topDiv">
+		<div id="newAnimalDiv">
+			<button id="newBtn" type="button" class="btn btn-success" ng-click="formVisible=true">New Animal</button>
+			<form name="newAnimalForm" role="form" ng-show=formVisible>
+				<div class="form-group">
+     				<label>Name</label>
+					<input type="text" ng-model="animalName" id="animalName" name="animalName" class="form-control" placeholder="Lucy" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newAnimalForm.animalName.$touched && 
+						newAnimalForm.animalName.$error.required">*Name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Species</label>
+						<select id="speciesDropDown" ng-model="selectedSpecies" class="form-control" name="animalSpecies" 
+						ng-options="species as species.commonName for species in speciesList" required="true">
+							
+							<option value="" disabled>Select A Species</option>
+						</select>
+					<div>	
+						<span class="errMsg help-block" ng-show="newAnimalForm.animalSpecies.$touched && newAnimalForm.animalSpecies.$error.required">*Please select a species</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Enclosure</label>
+						<select id="enclosureDropDown" ng-model="selectedEnclosure" class="form-control" name="animalEnclosure" 
+						ng-options="enclosure as enclosure.name for enclosure in enclosureList" required="true">
+							
+							<option value="" disabled>Select A Enclosure</option>
+						</select>
+					<div>	
+						<span class="errMsg help-block" ng-show="newAnimalForm.animalEnclosure.$touched && newAnimalForm.animalEnclosure.$error.required">*Please select a species</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+					<button id="submitBtn" type="submit" class="btn btn-primary pull-right" ng-disabled="newAnimalForm.$invalid" ng-click="createAnimal();resetForm(newAnimalForm); formVisible=false">Submit</button>
+				</div>
+					<div class="form-group">
+					<button id="cancelBtn" type="button" class="btn btn-primary pull-right" ng-click="resetForm(newAnimalForm);formVisible=false">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="col-md-10 container-fluid" id="animalTable">
+		<h2>Animal List</h2>
+		<uib-accordion >
+        	<uib-accordion-group panel-class="panel-info nonExpandable" is-disabled="true">
+        		<uib-accordion-heading>
+					<div class="row tableHeader">
+						<div id="name" class="col-xs-3">Name&nbsp;<a ng-click="orderBy('name')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="species" class="col-xs-3">Species&nbsp;<a ng-click="orderBy('species.commonName')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="favorFood" class="col-xs-3">Favorite Food&nbsp;<a ng-click="orderBy('species.food.name')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="enclosure" class="col-xs-3">Enclosure&nbsp;<a ng-click="orderBy('enclosure.name')"><span class="glyphicon glyphicon-sort"></span></a></div>     
+					</div>
+				</uib-accordion-heading>
+        	</uib-accordion-group>
+        	<uib-accordion-group panel-class="panel-info nonExpandable" ng-repeat="animal in animalList.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | orderBy: orderProp : reverse" is-disabled="isUpdate"> 
+	        	<uib-accordion-heading>
+					<div class="row rowHeader">
+				         <div class="col-xs-3">{{animal.name}}</div>
+				         <div class="col-xs-3">{{animal.species.commonName}}</div>
+				         <div class="col-xs-3">{{animal.species.food.name}}</div>
+				         <div class="col-xs-3">{{animal.enclosure.name}}</div>
+				    </div>
+			    </uib-accordion-heading>
+			    <button type="button" class="btn btn-success updateBtn" ng-click="enableUpdate()" ng-hide="showUpdateBtn">Update</button> 
+			    <div class="updateForm" ng-show="updateFormVisible">
+				 	<form name="updateForm" role="form">
+				 		<div class="form-group">
+               				<label>Name</label>
+               				<input ng-model="animal.name" class="form-control" name="updateName" required/>
+               				<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateName.$touched && 
+								updateForm.updateName.$error.required">*Name is required</span>
+							</div>
+               			</div>
+				 		<div class="form-group">
+               				<label>Species</label>
+               				<select name="updateSpeciesDropDown" class="form-control" ng-init="animal.species" ng-model="animal.species" 
+								ng-options="species as species.commonName for species in speciesList track by species.id" required="true">
+               				</select>
+               			</div>
+               			<div class="form-group">
+               				<label>Enclosure</label>
+               				<select name="updateEnclosureDropDown" class="form-control" ng-init="animal.enclosure" ng-model="animal.enclosure" 
+								ng-options="enclosure as enclosure.name for enclosure in enclosureList track by enclosure.id" required="true">
+							</select>
+               			</div>
+						
+					 	<div class="form-group">
+					 		<button type="button" class="btn btn-primary pull-right saveBtn" ng-click="updateAnimal(animal); disableUpdate()" ng-disabled="updateForm.$invalid">Save</button>
+					 	</div>
+					 </form>
+				 </div>
+			</uib-accordion-group>
+		</uib-accordion>
+		<footer>
+			<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" boundary-links="true" 
+			rotate="false" items-per-page="itemsPerPage"></uib-pagination>
+		</footer>	    
+	</div>  
+

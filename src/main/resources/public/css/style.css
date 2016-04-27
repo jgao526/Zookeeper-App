@@ -1,0 +1,66 @@
+.errMsg{
+	color: red;
+	font-weight: bold;
+}
+
+.icon-sort{
+	cursor: pointer;
+}
+
+.topDiv{
+	margin-bottom:50px;
+}
+
+#submitBtn{
+	margin-left:10px;
+	margin-bottom:10px;
+}
+
+.tableHeader{
+	font-weight: bold;
+	o-text-overflow: ellipsis;
+}
+
+.animalList{
+     border-bottom: 1px solid rgb(221, 221, 221);
+     padding: 5px; 
+}
+
+.animalListHeader{
+	font-weight: bold;
+}
+
+.updateForm{
+	width: 200px;
+	margin: 0 auto;
+	text-align: left:
+	
+}
+
+#newBtn{
+	margin-top: 50px;
+}
+
+
+#homeDiv h1 {
+    position: absolute;
+    text-align: center;
+    left:0;
+    right:0;
+    color: white;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+body {
+  background-image: url("/img/nature-backgrounds.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-color: #464646;
+  font-family: 'Georgia';
+}
+
+
+	

@@ -1,0 +1,103 @@
+
+	<div class="col-sm-2 topDiv">
+		<div id="newFoodDiv">
+			<button id="newBtn"type="button" class="btn btn-success" ng-click="formVisible=true">New Food</button>
+			<form name="newFoodForm" role="form" ng-show=formVisible>
+				<div class="form-group">
+     				<label>Name</label>
+					<input type="text" ng-model="foodName" id="foodName" name="foodName" class="form-control" placeholder="Banana" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newFoodForm.foodName.$touched && 
+						newFoodForm.foodName.$error.required">*Food name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Vendor</label>
+					<input type="text" ng-model="foodVendor" id="foodVendor" name="foodVendor" class="form-control" placeholder="Randy's food service" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newFoodForm.foodVendor.$touched && 
+						newFoodForm.foodVendor.$error.required">*Vendor name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Category</label>
+						<select id="categoryDropDown" ng-model="selectedCategory" class="form-control" name="foodCategory" 
+						ng-options="foodCategory as foodCategory.categoryName for foodCategory in foodCategoryList" required="true">
+							
+							<option value="" disabled>Select A Category</option>
+						</select>
+					<div>	
+						<span class="errMsg help-block" ng-show="newFoodForm.foodCategory.$touched && newFoodForm.foodCategory.$error.required">*Please select a category</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+					<button id="submitBtn" type="submit" class="btn btn-primary pull-right" ng-disabled="newFoodForm.$invalid" ng-click="createFood();resetForm(newFoodForm); formVisible=false">Submit</button>
+				</div>
+				<div class="form-group">
+					<button id="cancelBtn" type="button" class="btn btn-primary pull-right" ng-click="resetForm(newFoodForm);formVisible=false">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>	
+		
+	<div class="col-sm-10 container-fluid" id="foodTable">
+		<h2>Food List</h2>
+		<uib-accordion id="accordionTable">
+        	<uib-accordion-group panel-class="panel-info"  is-disabled="true">
+        		<uib-accordion-heading>
+					<div class="row tableHeader">
+						<div id="name" class="col-xs-4">Name&nbsp;<a ng-click="orderBy('name')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="vendor" class="col-xs-4">Vendor&nbsp;<a ng-click="orderBy('vendor')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="category" class="col-xs-4">Category&nbsp;<a ng-click="orderBy('foodCategory.categoryName')"><span class="glyphicon glyphicon-sort"></span></a></div>
+					</div>
+				</uib-accordion-heading>
+			</uib-accordion-group>
+			<uib-accordion-group panel-class="panel-info" ng-repeat="food in foodList.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))  | orderBy: orderProp : reverse" is-disabled="isUpdate"> 
+	        	<uib-accordion-heading>
+					<div class="row rowHeader">
+				         <div class="col-xs-4">{{food.name}}</div>
+				         <div class="col-xs-4">{{food.vendor}}</div>
+				         <div class="col-xs-4">{{food.foodCategory.categoryName}}</div>
+				    </div>
+				 </uib-accordion-heading>
+				 	
+				 <button type="button" class="btn btn-success updateBtn" ng-click="enableUpdate()" ng-hide="showUpdateBtn">Update</button>  
+				 <div class="updateForm" ng-show="updateFormVisible">
+				 	<form name="updateForm" role="form">
+	               		<div class="form-group">
+	               			<label>Name</label>
+	               			<input ng-model="food.name" class="form-control" name="updateName" required/>
+	               			<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateName.$touched && 
+									updateForm.updateName.$error.required">*Name is required</span>
+							</div>
+	               		</div>
+	               		<div class="form-group">
+	               			<label>Vendor</label>
+	               			<input ng-model="food.vendor" class="form-control" name="updateVendor" required/>
+	               			<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateVendor.$touched && 
+									updateForm.updateVendor.$error.required">*Name is required</span>
+							</div>
+	               		</div>
+					 	<div class="form-group">
+	               			<label>Category</label>
+	               			<select class="form-control" ng-init="food.foodCategory" ng-model="food.foodCategory"  name="updateCategory" 
+									ng-options="foodCategory as foodCategory.categoryName for foodCategory in foodCategoryList track by foodCategory.id" required="true">
+								
+							</select>
+	               		</div>
+					 	
+						<div class="form-group">
+						 	<button type="button" class="btn btn-primary pull-right saveBtn" ng-click="updateFood(food); disableUpdate()" ng-disabled="updateForm.$invalid">Save</button>
+						</div>
+					</form>
+				</div>
+			</uib-accordion-group>
+		</uib-accordion>
+		<footer>
+			<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" boundary-links="true" 
+			rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></uib-pagination>
+		</footer>	    
+	</div>  
+

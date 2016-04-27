@@ -1,0 +1,137 @@
+
+	<div class="col-md-2 topDiv">
+		<div id="newSpeciesDiv">
+			<button id="newBtn" type="button" class="btn btn-success" ng-click="formVisible=true">New Species</button>
+			<form name="newSpeciesForm" role="form" ng-show=formVisible>
+				<div class="form-group">
+     				<label>Common Name</label>
+					<input type="text" ng-model="speciesCommonName" id="speciesCommonName" name="commonName" class="form-control" placeholder="Tiger" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newSpeciesForm.commonName.$touched && 
+						newSpeciesForm.commonName.$error.required">*Common name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Scientific Name</label>
+					<input type="text" ng-model="speciesScientificName" id="speciesScientificName" name="scientificName" class="form-control" placeholder="Panthera Tigris" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newSpeciesForm.scientificName.$touched && 
+						newSpeciesForm.scientificName.$error.required">*Scientific name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Info Link</label>
+					<input type="text" ng-model="speciesInfoLink" id="speciesInfoLink" name="infoLink" class="form-control" placeholder="http://a-z-animals.com/animals/tiger/" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newSpeciesForm.infoLink.$touched && 
+						newSpeciesForm.infoLink.$error.required">*Informational link is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Favorite Food</label>
+						<select id="foodDropDown" ng-model="selectedFood" class="form-control" name="food" 
+						ng-options="food as food.name for food in foodList" required="true">
+							
+							<option value="" disabled>Select A Favorite Food</option>
+						</select>
+					<div>	
+						<span class="errMsg help-block" ng-show="newSpeciesForm.food.$touched && newSpeciesForm.food.$error.required">*Please select a food</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+					<button id="submitBtn" type="submit" class="btn btn-primary pull-right" ng-disabled="newSpeciesForm.$invalid" ng-click="createSpecies();resetForm(newSpeciesForm); formVisible=false">Submit</button>
+				</div>
+				<div class="form-group">
+					<button id="cancelBtn" type="button" class="btn btn-primary pull-right" ng-click="resetForm(newSpeciesForm);formVisible=false">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="col-sm-10 container-fluid" id="speciesTable">
+		<h2>Species List</h2>
+        <uib-accordion >
+        	<uib-accordion-group panel-class="panel-info" is-disabled="true">
+        		<uib-accordion-heading>
+	        		<div class="row tableHeader">
+						<div id="commonName" class="col-xs-4">Common Name&nbsp;<a ng-click="orderBy('commonName')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="scientificName" class="col-xs-4">Scientific Name&nbsp;<a ng-click="orderBy('scientificName')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="favorFood" class="col-xs-4">Favorite Food&nbsp;<a ng-click="orderBy('food.name')"><span class="glyphicon glyphicon-sort"></span></a></div>    
+					</div>
+				</uib-accordion-heading>
+        	</uib-accordion-group>
+			<uib-accordion-group panel-class="panel-info" ng-repeat="species in speciesList.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | orderBy: orderProp : reverse" is-disabled="isUpdate"> 
+                <uib-accordion-heading>
+	                <div class="row rowHeader" ng-click="getAnimalBySpeciesId(species.id)">
+	                	<div class="col-xs-4">{{species.commonName}}</div>
+	                	<div class="col-xs-4">{{species.scientificName}}</div>
+	                	<div class="col-xs-4">{{species.food.name}}</div>
+	                </div>
+               	</uib-accordion-heading>
+               	 
+               	<div class="row" ng-hide="updateFormVisible">
+               		<div class="col-sm-2">
+               			<button type="button" class="btn btn-success updateBtn" ng-click="enableUpdate()">Update</button>
+               		</div>
+               		<div class="col-sm-9 animalListHeader">
+               			<p>Additional Information : <a href="{{species.infoLink}}">{{species.infoLink}}</a></p>
+            		</div>
+               	</div>
+               	<div class="updateForm" ng-show="updateFormVisible">
+				 	<form name="updateForm" role="form">
+				 		<div class="form-group">
+               				<label>Common Name</label>
+               				<input ng-model="species.commonName" class="form-control" name="updateCommonName" required/>
+               				<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateCommonName.$touched && 
+								updateForm.updateCommonName.$error.required">*Name is required</span>
+							</div>
+               			</div>
+               			<div class="form-group">
+               				<label>Scientific Name</label>
+               				<input ng-model="species.scientificName" class="form-control" name="updateScientificName" required/>
+               				<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateScientificName.$touched && 
+								updateForm.updateScientificName.$error.required">*Name is required</span>
+							</div>
+               			</div>
+               			<div class="form-group">
+               				<label>Favorite Food</label>
+               				<select name="updateFavFoodDropDown" class="form-control" ng-init="species.food" ng-model="species.food" 
+								ng-options="food as food.name for food in foodList track by food.id" required="true">
+							
+							</select>
+               			</div>
+				 		<div class="form-group">
+               				<label>Scientific Name</label>
+               				<input ng-model="species.infoLink" class="form-control" name="updateInfoLink" required/>
+               				<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateInfoLink.$touched && 
+								updateForm.updateInfoLink.$error.required">*Name is required</span>
+							</div>
+               			</div>
+					 	<div class="form-group">
+					 		<button type="button" class="btn btn-primary pull-right saveBtn" ng-click="updateSpecies(species); disableUpdate()" ng-disabled="updateForm.$invalid">Save</button>
+					 	</div>
+					 </form>
+				 </div>
+				 
+               	<div class="row animalList animalListHeader" ng-hide="updateFormVisible">
+	               	<div class="col-xs-4">Name</div>
+	               	<div class="col-xs-4">Favorite Food</div>
+	               	<div class="col-xs-4">Enclosure</div>
+	            </div>	
+	            <div class="row animalList" ng-repeat="animal in speciesAnimals" ng-hide="updateFormVisible">
+	               	<div class="col-xs-4">{{animal.name}}</div>
+	               	<div class="col-xs-4">{{animal.species.food.name}}</div>
+	               	<div class="col-xs-4">{{animal.enclosure.name}}</div>
+	            </div>
+   		 	</uib-accordion-group>
+		</uib-accordion>
+		<footer>
+			<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" boundary-links="true" 
+			rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></uib-pagination>
+		</footer>
+	</div>
+
+		
+

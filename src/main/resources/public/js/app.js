@@ -1,0 +1,1 @@
+angular.module('zooKeeperApp', ['ui.router', 'ngAnimate', 'toaster', 'ui.bootstrap']);

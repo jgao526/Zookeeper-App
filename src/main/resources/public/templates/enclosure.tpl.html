@@ -1,0 +1,164 @@
+
+	<div class="col-sm-2 container-fluid topDiv">
+		<div id="newEnclosureDiv">
+			<button id="newBtn" type="button" class="btn btn-success" ng-click="formVisible=true">New Enclosure</button>
+			<form name="newEnclosureForm" role="form" ng-show=formVisible>
+				<div class="form-group">
+     				<label>Name</label>
+					<input type="text" ng-model="enclosureName" id="enclosureName" name="enclosureName" class="form-control" placeholder="Amazon" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newEnclosureForm.enclosureName.$touched && 
+						newEnclosureForm.enclosureName.$error.required">*Name is required</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Earliest Feeding Time</label>
+					<uib-timepicker ng-model="startFeedTime" hour-step="hstep" minute-step="mstep" id="enclosureStartFeedTime" name="startFeedTime" 
+					ng-change="validateTime(startFeedTime, endFeedTime)" required="true"></uib-timepicker>
+					<div>
+						<span class="errMsg help-block" ng-show="newEnclosureForm.startFeedTime.$touched && 
+						newEnclosureForm.startFeedTime.$error.required">*Please select a time</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Latest Feeding Time</label>
+					<uib-timepicker ng-model="endFeedTime" hour-step="hstep" minute-step="mstep" id="enclosureEndFeedTime" name="endFeedTime" 
+					 ng-change="validateTime(startFeedTime, endFeedTime)" required="true"></uib-timepicker>
+					<div>
+						<span class="errMsg help-block" ng-show="newEnclosureForm.endFeedTime.$touched && 
+						newEnclosureForm.endFeedTime.$error.required">*Please select a time</span>
+						<span class="errMsg help-block" ng-show="newEnclosureForm.startFeedTime.$touched && 
+						inValidTime">*Invalid time</span>
+					</div>
+   				</div>
+   				<div class="form-group">
+     				<label>Condition</label>
+					<input type="text" ng-model="enclosureCondition" id="enclosureCondition" name="condition" class="form-control" placeholder="Good" required />
+					<div>
+						<span class="errMsg help-block" ng-show="newEnclosureForm.condition.$touched && 
+						newEnclosureForm.condition.$error.required">*Informational link is required</span>
+					</div>
+   				</div>
+   				
+   				<div class="form-group">
+   					 <div class="layer"></div>
+					<button id="submitBtn" type="submit" class="btn btn-primary pull-right" ng-disabled="newEnclosureForm.$invalid || inValidTime" ng-click="createEnclosure();resetForm(newEnclosureForm); formVisible=false">Submit</button>
+					
+				</div>
+				<div class="form-group">
+					<button id="cancelBtn" type="button" class="btn btn-primary pull-right" ng-click="resetForm(newEnclosureForm);formVisible=false">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="col-sm-10 container-fluid" id="enclosureTable">
+		<div class="row">
+			<div class="col-sm-8">
+				<h2>Enclosure List</h2>
+			</div>
+			<div class="col-sm-4">
+				<form name="searchForm" role="form" class="pull-right">
+					<div class="form-group">
+						<input ng-model="searchBy" type="text" name="enclosureName" placeholder="animal's fav food" required/>
+						<button type="button" class="btn btn-primary" ng-disabled="searchForm.$invalid" ng-click="searchEnclosureByFavFood()"><span class="glyphicon glyphicon-search"></span></button>
+					</div>
+				</form>
+			</div>
+		</div>
+		
+        <uib-accordion >
+        	<uib-accordion-group panel-class="panel-info" is-disabled="true">
+        		<uib-accordion-heading>
+	        		<div class="row tableHeader">
+						<div id="name" class="col-xs-3">Name&nbsp;<a ng-click="orderBy('name')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="animalTotal" class="col-xs-3">Total Animal&nbsp;<a ng-click="orderBy('animalTotal')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="feedTime" class="col-xs-3">Feeding Time&nbsp;<a ng-click="orderBy('startFeedTime')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						<div id="condition" class="col-xs-3">Condition&nbsp;<a ng-click="orderBy('contition')"><span class="glyphicon glyphicon-sort"></span></a></div>
+						   
+					</div>
+				</uib-accordion-heading>
+        	</uib-accordion-group>
+			<uib-accordion-group panel-class="panel-info" ng-repeat="enclosure in enclosureList.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | orderBy: orderProp : reverse" is-disabled="isUpdate"> 
+                <uib-accordion-heading>
+	                <div class="row rowHeader" ng-click="getAnimalByEnId(enclosure.id)">
+	                	<div class="col-xs-3">{{enclosure.name}}</div>
+	                	<div class="col-xs-3">{{enclosure.animalTotal}}</div>
+	                	<div class="col-xs-3">{{enclosure.startFeedTime | date: 'shortTime'}} - {{enclosure.endFeedTime | date: 'shortTime'}}</div>
+	                	<div class="col-xs-3">{{enclosure.condition}}</div>
+	                	
+	                </div>
+               	</uib-accordion-heading>
+               		<div class="row">
+	               		<div class="col-sm-2">
+					 		<button type="button" class="btn btn-danger" ng-click="removeEnclosure(enclosure.id)" ng-disabled="enclosureAnimals.length > 0" ng-hide="updateFormVisible" >Delete Enclosure</button>
+		               	</div>
+	               		<div class="col-sm-3">
+		               		<button type="button" class="btn btn-success updateBtn" ng-click="enableUpdate()" ng-hide="showUpdateBtn">Update</button>  	
+		               	</div>
+	               	</div>
+	               	<div class="row text-center">
+	               	<h4>Animals In This Enclosure</h4>
+	               
+	               	</div>
+               	<div class="updateForm" ng-show="updateFormVisible">
+               		<form name="updateForm" role="form">
+               			<div class="form-group">
+               				<label>Name</label>
+               				<input ng-model="enclosure.name" class="form-control" name="updateName" required/>
+               				<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateName.$touched && 
+								updateForm.updateName.$error.required">*Name is required</span>
+							</div>
+               			</div>
+               			<div class="form-group">
+               				<label>Earliest Feeding Time</label>
+               				<uib-timepicker ng-model="enclosure.startFeedTime" hour-step="hstep" minute-step="mstep" 
+					 		name="updateStartFeedTime" required="true"></uib-timepicker>
+					 		<span class="errMsg help-block" ng-show="updateForm.updateStartFeedTime.$touched && 
+								updateForm.updateStartFeedTime.$error.required">*Please select a time</span>
+					 		
+					 	</div>
+					 	
+					 	<div class="form-group">
+					 		<label>Latest Feeding Time</label>
+					 		<uib-timepicker ng-model="enclosure.endFeedTime" hour-step="hstep" minute-step="mstep" 
+					 		name="updateEndFeedTime" required="true"></uib-timepicker>
+					 		<span class="errMsg help-block" ng-show="updateForm.updateEndFeedTime.$touched && 
+								updateForm.updateEndFeedTime.$error.required">*Please select a time</span>
+					 	</div>
+					 	
+					 	<div class="form-group">
+					 		<label>Condition</label>
+					 		<input ng-model="enclosure.condition" class="form-control" name="updateCondition" required/>
+					 		<div>
+								<span class="errMsg help-block" ng-show="updateForm.updateCondition.$touched && 
+								updateForm.updateCondition.$error.required">*Name is required</span>
+							</div>
+						</div>
+						<div class="form-group">
+					 		<button type="button" class="btn btn-primary pull-right saveBtn" ng-click="updateEnclosure(enclosure); disableUpdate()" ng-disabled="updateForm.$invalid">Save</button>
+					 	</div>
+				 	</form>
+				 </div>
+				 		
+	               		<div class="row animalList animalListHeader" ng-hide="updateFormVisible">
+		               		<div class="col-xs-4">Name</div>
+		               		<div class="col-xs-4">Species</div>
+		               		<div class="col-xs-4">Favorite Food</div>
+		               	</div>	
+		               	<div class="row animalList" ng-repeat="animal in enclosureAnimals" ng-hide="updateFormVisible">
+		               		<div class="col-xs-4">{{animal.name}}</div>
+		               		<div class="col-xs-4">{{animal.species.commonName}}</div>
+		               		<div class="col-xs-4">{{animal.species.food.name}}</div>
+		               	</div>
+	               
+	        	      
+   		 	</uib-accordion-group>
+		</uib-accordion>
+		<footer>
+			<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" boundary-links="true" 
+			rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></uib-pagination>
+		</footer>	
+	</div>
+

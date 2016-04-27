@@ -1,0 +1,22 @@
+{
+  "name": "john_gao_final",
+  "description": "zoo keeper final project",
+  "main": "index.js",
+  "authors": [
+    "John Gao"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    
+    "angular-bootstrap": "^1.2.4"
+  }
+}
